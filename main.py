@@ -92,55 +92,59 @@ def init_dataset():
         generate_dataset()
         save_dataset()
 
-pygame.init()
-window = pygame.display.set_mode((WIDTH, HEIGHT), pygame.DOUBLEBUF|pygame.HWSURFACE)
-pygame.display.set_caption("AI visuals")
+def main():
+    pygame.init()
+    window = pygame.display.set_mode((WIDTH, HEIGHT), pygame.DOUBLEBUF|pygame.HWSURFACE)
+    pygame.display.set_caption("AI visuals")
 
-canvas = pygame.Surface((WIDTH, HEIGHT))
+    canvas = pygame.Surface((WIDTH, HEIGHT))
 
-init_dataset()
+    init_dataset()
 
-draging_index = -1
-learn_index = 0
-run = True
-while run:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if draging_index == -1:
-                draging_index = get_circle_under_mouse(pygame.mouse.get_pos())
-        elif event.type == pygame.MOUSEBUTTONUP:
-            if draging_index >= 0:
-                draging_index = -1
-                save_dataset()
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-            NETWORK.randomize()
-    
-    # update
-    
-    if draging_index >= 0:
-        mouse_pos = pygame.mouse.get_pos()
-        DATASET[draging_index] = (mouse_pos[0] / WIDTH, mouse_pos[1] / HEIGHT, DATASET[draging_index][2])
+    draging_index = -1
+    learn_index = 0
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if draging_index == -1:
+                    draging_index = get_circle_under_mouse(pygame.mouse.get_pos())
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if draging_index >= 0:
+                    draging_index = -1
+                    save_dataset()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                NETWORK.randomize()
         
-    # learn
-    
-    for i in range(BATCH_SIZE):
-        d_x, d_y, d_r = DATASET[learn_index]
-        if d_r == 0:
-            NETWORK.fit(np.array([[d_x, d_y]]).T, np.array([[1.0, 0.0]]).T, LEARNING_RATE)
-        else:
-            NETWORK.fit(np.array([[d_x, d_y]]).T, np.array([[0.0, 1.0]]).T, LEARNING_RATE)
-        learn_index = (learn_index + 1) % len(DATASET)
+        # update
         
-    # draw
-    canvas.fill(0)
-    
-    draw_background(canvas, 10)
-    draw_dataset(canvas)
-    
-    window.blit(canvas, (0, 0))
-    pygame.display.flip()
+        if draging_index >= 0:
+            mouse_pos = pygame.mouse.get_pos()
+            DATASET[draging_index] = (mouse_pos[0] / WIDTH, mouse_pos[1] / HEIGHT, DATASET[draging_index][2])
+            
+        # learn
+        
+        for i in range(BATCH_SIZE):
+            d_x, d_y, d_r = DATASET[learn_index]
+            if d_r == 0:
+                NETWORK.fit(np.array([[d_x, d_y]]).T, np.array([[1.0, 0.0]]).T, LEARNING_RATE)
+            else:
+                NETWORK.fit(np.array([[d_x, d_y]]).T, np.array([[0.0, 1.0]]).T, LEARNING_RATE)
+            learn_index = (learn_index + 1) % len(DATASET)
+            
+        # draw
+        canvas.fill(0)
+        
+        draw_background(canvas, 10)
+        draw_dataset(canvas)
+        
+        window.blit(canvas, (0, 0))
+        pygame.display.flip()
 
-pygame.quit()
-exit()
+    pygame.quit()
+    exit()
+    
+if __name__ == '__main__':
+    main()
