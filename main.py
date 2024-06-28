@@ -2,7 +2,7 @@ import pygame
 import random
 import numpy as np
 
-from neuro_layers import LinearLayer, SigmoidActivator, TahnActivator, SequentialModel
+from neuro_layers import LinearLayer, SigmoidActivator, TanhActivator, SequentialModel
 
 WIDTH = 720
 HEIGHT = 720
@@ -23,11 +23,11 @@ BATCH_SIZE = DATASET_SIZE
 
 NETWORK = SequentialModel([
     LinearLayer(2, 5),
-    TahnActivator(),
+    TanhActivator(),
     LinearLayer(5, 5),
-    TahnActivator(),
+    TanhActivator(),
     LinearLayer(5, 2),
-    TahnActivator()
+    TanhActivator()
 ])
 NETWORK.randomize_weights()
 
@@ -116,15 +116,11 @@ def main():
                     draging_index = -1
                     save_dataset()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                NETWORK.randomize()
-        
-        # update
-        
+                NETWORK.randomize_weights()
+                
         if draging_index >= 0:
             mouse_pos = pygame.mouse.get_pos()
             DATASET[draging_index] = (mouse_pos[0] / WIDTH, mouse_pos[1] / HEIGHT, DATASET[draging_index][2])
-            
-        # learn
         
         for i in range(BATCH_SIZE):
             d_x, d_y, d_r = DATASET[learn_index]
@@ -134,7 +130,6 @@ def main():
                 NETWORK.fit(np.array([[d_x, d_y]]).T, np.array([[0.0, 1.0]]).T, LEARNING_RATE)
             learn_index = (learn_index + 1) % len(DATASET)
             
-        # draw
         canvas.fill(0)
         
         draw_background(canvas, 10)
