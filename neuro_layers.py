@@ -39,7 +39,7 @@ class SigmoidActivator:
     def __call__(self, inp_vector: np.array) -> np.array:
         return 1.0 / (1.0 + np.exp(-inp_vector))
     
-class TahnActivator:
+class TanhActivator:
     def derivative(self, x: np.array) -> np.array:
         v = self.__call__(x)
         return 1.0 - v*v

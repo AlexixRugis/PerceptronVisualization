@@ -2,7 +2,7 @@ import pygame
 import random
 import numpy as np
 
-from neuro_layers import LinearLayer, SigmoidActivator, TahnActivator, SequentialModel
+from neuro_layers import LinearLayer, SigmoidActivator, TanhActivator, SequentialModel
 
 WIDTH = 720
 HEIGHT = 720
@@ -23,11 +23,11 @@ BATCH_SIZE = DATASET_SIZE
 
 NETWORK = SequentialModel([
     LinearLayer(2, 5),
-    TahnActivator(),
+    TanhActivator(),
     LinearLayer(5, 5),
-    TahnActivator(),
+    TanhActivator(),
     LinearLayer(5, 2),
-    TahnActivator()
+    TanhActivator()
 ])
 NETWORK.randomize_weights()
 
